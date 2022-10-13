@@ -1,26 +1,17 @@
 import { Text, View, Image, StyleSheet } from "react-native";
 import { Button } from "@rneui/themed";
-import axios from "axios";
-export default function LoginScreen({ route, navigation }) {
-  const API_URL = `http://192.168.178.53:8888`;
-
-  const loginRequest = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/api/login`);
-      console.log(response.data);
-    } catch (e) {
-      console.log(e.message);
-    }
-  };
-  // Passing configuration object to axios
-
+export default function PlaylistScreen({ route, navigation }) {
   const styles = StyleSheet.create({
     container: {
       paddingTop: 50,
     },
-    logo: {
+    tinyLogo: {
       width: 200,
       height: 200,
+    },
+    logo: {
+      width: 66,
+      height: 58,
     },
   });
   return (
@@ -41,7 +32,10 @@ export default function LoginScreen({ route, navigation }) {
       >
         Spotivent
       </Text>
-      <Image style={styles.logo} source={require("../assets/icon-green.png")} />
+      <Image
+        style={styles.tinyLogo}
+        source={require("../assets/icon-green.png")}
+      />
       <Text
         style={{
           fontSize: 30,
@@ -53,9 +47,7 @@ export default function LoginScreen({ route, navigation }) {
       </Text>
 
       <Button
-        onPress={() => {
-          loginRequest();
-        }}
+        onPress={() => navigation.navigate("Playlist")}
         title="Login"
         loading={false}
         loadingProps={{ size: "small", color: "white" }}

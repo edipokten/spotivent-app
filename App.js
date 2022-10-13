@@ -2,6 +2,7 @@ import * as React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import LoginScreen from "./screens/LoginScreen";
+import PlaylistScreen from "./screens/PlaylistScreen";
 
 const Stack = createStackNavigator();
 
@@ -19,6 +20,7 @@ function App() {
         }}
       >
         <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Playlist" component={PlaylistScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
