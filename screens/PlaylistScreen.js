@@ -1,41 +1,77 @@
 import { Text, View, Image, StyleSheet } from "react-native";
-import { Button } from "@rneui/themed";
+import { Button, Icon } from "@rneui/themed";
+import { selectProfile } from "../store/user/selectors";
+import { selectPlaylists } from "../store/playlist/selectors";
+import { getPlaylists } from "../store/playlist/thunks";
+
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Avatar, ListItem } from "@rneui/themed";
+import { FlatList } from "react-native-gesture-handler";
+import React, { useState } from "react";
+import { setSelectedPlaylists } from "../store/playlist/thunks";
 export default function PlaylistScreen({ route, navigation }) {
+  const dispatch = useDispatch();
+
+  const playlists = useSelector(selectPlaylists);
+  const profile = useSelector(selectProfile);
+  const [checkedPlaylists, setCheckPlaylists] = useState([]);
+
+  useEffect(() => {
+    if (playlists.length == 0) {
+      dispatch(getPlaylists());
+    } else {
+      console.log(playlists);
+    }
+    // if (playlists) {
+    //   navigation.navigate("MainScreen");
+    // }
+  }, [playlists]);
+
+  const handleCheck = (item) => {
+    let updatedList = [...checkedPlaylists];
+    if (!isChecked(item)) {
+      updatedList = [...checkedPlaylists, item];
+    } else {
+      updatedList.splice(checkedPlaylists.indexOf(item), 1);
+    }
+    setCheckPlaylists(updatedList);
+  };
+  const isChecked = (item) => {
+    return checkedPlaylists.includes(item);
+  };
   const styles = StyleSheet.create({
     container: {
       paddingTop: 50,
     },
-    tinyLogo: {
+
+    logo: {
       width: 200,
       height: 200,
     },
-    logo: {
-      width: 66,
-      height: 58,
-    },
   });
+  const goToMainScreen = () => {
+    // console.log(checkedPlaylists);
+    dispatch(setSelectedPlaylists(checkedPlaylists));
+  };
+
   return (
     <View
       style={{
-        alignItems: "center",
-        justifyContent: "space-evenly",
         backgroundColor: "#191414",
         flex: 1,
       }}
     >
-      <Text
+      <View
         style={{
-          fontSize: 50,
-          textAlign: "center",
-          color: "white",
+          flexDirection: "row",
+          justifyContent: "space-around",
+          marginBottom: 30,
+          marginTop: 30,
         }}
       >
-        Spotivent
-      </Text>
-      <Image
-        style={styles.tinyLogo}
-        source={require("../assets/icon-green.png")}
-      />
+        <Avatar size={128} rounded source={{ uri: profile.image }} />
+      </View>
       <Text
         style={{
           fontSize: 30,
@@ -43,33 +79,78 @@ export default function PlaylistScreen({ route, navigation }) {
           color: "white",
         }}
       >
-        Electronic events around you for your music taste
+        Welcome {profile.name} please import your playlists
       </Text>
+      <FlatList
+        ListHeaderComponent={
+          <>
+            <View>
+              {playlists.map((item, i) => (
+                <ListItem
+                  containerStyle={{ backgroundColor: "#191414" }}
+                  key={i}
+                  bottomDivider
+                >
+                  <ListItem.CheckBox
+                    containerStyle={{ backgroundColor: "#191414" }}
+                    backgroundColor={"black"}
+                    center
+                    value={item}
+                    onPress={() => {
+                      handleCheck(item);
+                    }}
+                    checked={isChecked(item)}
+                    checkedIcon={
+                      <Icon
+                        name="checkbox"
+                        type="ionicon"
+                        color="#23D662"
+                        size={30}
+                        iconStyle={{ marginRight: 10 }}
+                      />
+                    }
+                    uncheckedIcon={
+                      <Icon
+                        name="square-outline"
+                        type="ionicon"
+                        color="#23D662"
+                        size={30}
+                        iconStyle={{ marginRight: 10 }}
+                      />
+                    }
+                  />
+                  <ListItem.Content>
+                    <ListItem.Title style={{ color: "white" }}>
+                      {item.name}
+                    </ListItem.Title>
+                  </ListItem.Content>
+                </ListItem>
+              ))}
+            </View>
+          </>
+        }
+      />
 
       <Button
-        onPress={() => navigation.navigate("Playlist")}
+        onPress={goToMainScreen}
+        disabled={checkedPlaylists.length > 0 ? false : true}
         title="Login"
         loading={false}
         loadingProps={{ size: "small", color: "white" }}
         buttonStyle={{
-          backgroundColor: "#1DB954",
+          backgroundColor: "#23D662",
           borderRadius: 5,
         }}
         titleStyle={{ fontWeight: "bold", color: "black", fontSize: 23 }}
         containerStyle={{
-          marginHorizontal: 50,
+          marginTop: 20,
           height: 50,
-          width: 350,
-          marginVertical: 10,
-        }}
-        icon={{
-          name: "spotify",
-          type: "font-awesome",
-          size: 30,
-          color: "black",
+          width: 300,
+          marginBottom: 20,
+          marginHorizontal: 40,
         }}
       >
-        Login with Spotify
+        Continue
       </Button>
     </View>
   );

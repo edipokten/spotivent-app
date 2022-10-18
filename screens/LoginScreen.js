@@ -1,13 +1,18 @@
 import { Text, View, Image, StyleSheet } from "react-native";
 import { Button } from "@rneui/themed";
-import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../store/user/thunks";
+import { selectToken, selectProfile } from "../store/user/selectors";
+import { useEffect } from "react";
+
 export default function LoginScreen({ route, navigation }) {
-  const API_URL = `http://192.168.178.53:8888`;
+  const dispatch = useDispatch();
+
+  //const token = useSelector(selectToken);
 
   const loginRequest = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/login`);
-      console.log(response.data);
+      dispatch(login());
     } catch (e) {
       console.log(e.message);
     }
@@ -60,7 +65,7 @@ export default function LoginScreen({ route, navigation }) {
         loading={false}
         loadingProps={{ size: "small", color: "white" }}
         buttonStyle={{
-          backgroundColor: "#1DB954",
+          backgroundColor: "#23D662",
           borderRadius: 5,
         }}
         titleStyle={{ fontWeight: "bold", color: "black", fontSize: 23 }}
