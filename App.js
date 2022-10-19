@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -7,9 +7,6 @@ import PlaylistScreen from "./screens/PlaylistScreen";
 import MainScreen from "./screens/MainScreen";
 import SplashScreen from "./screens/SplashScreen";
 import { selectAppLoading } from "./store/appState/selectors";
-
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { appLoading, appDoneLoading } from "./store/appState/selectors";
 
 import store from "./store";
 import { Provider } from "react-redux";
@@ -20,6 +17,9 @@ import {
   selectIsPlaylistImported,
 } from "./store/user/selectors";
 import { getUserWithToken } from "./store/user/thunks";
+import { Button, Icon } from "@rneui/base";
+import { View, Image, Text } from "react-native";
+import { logOut } from "./store/user/slice";
 
 const Stack = createStackNavigator();
 
@@ -39,24 +39,29 @@ function App() {
 
   const dispatch = useDispatch();
 
-  //const [isLoggedIn, setIsLoggedIn] = useState(false);
-  // const [isSelectedPlaylists, setisSelectedPlaylists] = useState(false);
-
   useEffect(() => {
-    //  const value = await AsyncStorage.getItem("token");
-    //await AsyncStorage.removeItem("token");
     dispatch(getUserWithToken());
   }, []);
 
-  // useEffect(() => {
-  //   if (token) {
-  //   } else {
-  //     setIsLoggedIn(false);
-  //   }
-  // }, [isLoggedIn, profile]);
+  function LogoTitle() {
+    return (
+      <View
+        style={{
+          justifyContent: "space-evenly",
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        <Image
+          style={{ width: 50, height: 50 }}
+          source={require("./assets/icon-green.png")}
+        />
+        <Text style={{ fontSize: 24 }}>Spotivent</Text>
+      </View>
+    );
+  }
 
   return (
-    // <Provider store={store}>
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{
@@ -65,12 +70,40 @@ function App() {
           },
           headerTintColor: "#fff",
           headerTitleAlign: "center",
+          headerTintColor: "black",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
         }}
       >
         {appLoading ? (
           <Stack.Screen name="Splash" component={SplashScreen} />
         ) : isPlaylistImported ? (
-          <Stack.Screen name="Main" component={MainScreen} />
+          <Stack.Screen
+            name="Main"
+            options={{
+              headerTitle: () => <LogoTitle />,
+              title: "Spotivent",
+              headerRight: () => (
+                <Button
+                  type="clear"
+                  icon={
+                    <Icon
+                      name="log-out-outline"
+                      type="ionicon"
+                      color="black"
+                      size={30}
+                    />
+                  }
+                  onPress={() => {
+                    dispatch(logOut());
+                  }}
+                  iconRight
+                />
+              ),
+            }}
+            component={MainScreen}
+          />
         ) : profile && !isPlaylistImported ? (
           <Stack.Screen name="Playlist" component={PlaylistScreen} />
         ) : (
@@ -78,7 +111,6 @@ function App() {
         )}
       </Stack.Navigator>
     </NavigationContainer>
-    // </Provider>
   );
 }
 
