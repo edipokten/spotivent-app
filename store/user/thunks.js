@@ -31,6 +31,7 @@ export const login = () => {
         const url = new URL(url_.url);
         const urlParams = new URLSearchParams(url.search);
         const token = urlParams.get("token");
+        console.log(token);
 
         const response = await axios.get(`${apiUrl}/user/profile`, {
           headers: { Authorization: `Bearer ${token}` },
